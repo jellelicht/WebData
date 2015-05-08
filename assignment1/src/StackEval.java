@@ -18,7 +18,7 @@ Stack < Integer > preOfOpenNodes;
 public class StackEval implements ContentHandler{
 
 	private TPEStack rootStack;
-	private int currentPre = 0; // pre number of the last element which has started
+	private int currentPre = 1; // pre number of the last element which has started
 	private Stack <Integer> preOfOpenNodes; // pre numbers for all elements having started but not ended yet
 	
 	
@@ -128,8 +128,8 @@ public class StackEval implements ContentHandler{
 				preOfOpenNodes.push(currentPre);
 				break;
 			}
-			currentPre++;
 		}
+		currentPre++;
 		for(int i=0; i<atts.getLength(); i++){
 			for (TPEStack s : rootStack.getDescendantStacks()){
 				if((atts.getLocalName(i).equals(s.getNode().getName())) && s.getParentStack().top().getState() == MatchState.OPEN) {
