@@ -38,7 +38,7 @@ public class StackEval implements ContentHandler{
 	@Override
 	public void endDocument() throws SAXException {
 		// TODO Auto-generated method stub
-		
+		System.out.println("End parsing of document");
 	}
 
 	@Override
@@ -47,13 +47,20 @@ public class StackEval implements ContentHandler{
 		// we need to find out if the element ending now corresponded
 		// to matches in some stacks
 		// first, get the pre number of the element that ends now:
+		if(preOfOpenNodes.isEmpty()) return;
 		int preOfLastOpen = preOfOpenNodes.pop();
 		// now look for Match objects having this pre number:
 		for (TPEStack s : rootStack.getDescendantStacks()){
-			if(s.getNode().getName().equals(localName) && s.top().getState() == MatchState.OPEN && 
-					s.top().getStart() == preOfLastOpen){ // TODO include something s.top.pre
+			if(s.getNode().getName().equals(localName) && 
+					((s.top() == null) || 
+					(s.top().getState() == MatchState.OPEN && 
+					s.top().getStart() == preOfLastOpen))){
 				// all descendants of this Match have been traversed by now.
+				if(s.top() == null)
+					continue;						
+				
 				Match m = s.pop();
+				System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart());
 				// check if m has child matches for all children
 				// of its pattern node
 				for (PatternNode child : s.getNode().getChildren()){
@@ -103,6 +110,7 @@ public class StackEval implements ContentHandler{
 	@Override
 	public void startDocument() throws SAXException {
 		// TODO Auto-generated method stub
+		System.out.println("Start the parsing of document");
 		
 	}
 
@@ -115,7 +123,10 @@ public class StackEval implements ContentHandler{
 				Match m = new Match(currentPre, (ps == null)? null : ps.top() , s);
 				// create a match satisfying the ancestor conditions
 				// of query node s.p
-				s.push(m); preOfOpenNodes.push(currentPre);
+				System.out.println("PUSH match " + m.getStack().getNode().getName() +" with id: "+ m.getStart());
+				s.push(m); 
+				preOfOpenNodes.push(currentPre);
+				break;
 			}
 			currentPre++;
 		}

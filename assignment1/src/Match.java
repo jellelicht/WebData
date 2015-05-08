@@ -18,6 +18,7 @@ public class Match {
 		this.start = start;
 		this.parent = parent;
 		this.stack = stack;
+		this.state = MatchState.OPEN;
 	}
 
 	public Map<PatternNode, List<Match>> getChildren() {

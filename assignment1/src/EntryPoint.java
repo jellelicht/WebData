@@ -21,8 +21,12 @@ public class EntryPoint {
 		XMLReader saxReader = 
 			    //XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
 			    XMLReaderFactory.createXMLReader();
-		saxReader.setContentHandler(new StackEval(generate(root, null)));
+		TPEStack stack = generate(root, null);
+		saxReader.setContentHandler(new StackEval(stack));
 		saxReader.parse("sample/sampleXML.xml");
+		
+		System.out.println("hi");
+		
 	}
 	
 	public static TPEStack generate (PatternNode root, TPEStack parent){

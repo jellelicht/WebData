@@ -33,7 +33,12 @@ public class TPEStack {
 	
 	//alias
 	public List<TPEStack> getDescendantStacks() {
-		return this.getChildrenStacks();
+		List<TPEStack> descendants = new ArrayList<TPEStack>();
+		for(TPEStack child: getChildrenStacks()){
+			descendants.addAll(child.getDescendantStacks());
+		}
+		descendants.add(this);
+		return descendants;
 	}
 	
 	public List<TPEStack> getChildrenStacks() {
