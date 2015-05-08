@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -6,6 +7,7 @@ public class PatternNode {
 	private String name;
 	private NodeType type;
 	private boolean required;
+	private List<PatternNode> children;
 	
 	public PatternNode(String name, NodeType type,
 			boolean required) {
@@ -13,6 +15,7 @@ public class PatternNode {
 		this.name = name;
 		this.type = type;
 		this.required = required;
+		this.children = new ArrayList<PatternNode>();
 	}
 
 	public String getName() {
@@ -41,6 +44,11 @@ public class PatternNode {
 
 	public List<PatternNode> getChildren() {
 		// TODO Auto-generated method stub
-		return null;
+		return children;
+	}
+	
+	public PatternNode addChild(PatternNode child){
+		children.add(child);
+		return this;
 	}
 }
