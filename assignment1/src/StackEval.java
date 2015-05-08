@@ -40,6 +40,29 @@ public class StackEval implements ContentHandler{
 		// TODO Auto-generated method stub
 		System.out.println("End parsing of document");
 	}
+	
+	private static boolean ancestorCondition(TPEStack s,String  localName){
+		TPEStack parentStack = s.getParentStack();
+		
+		boolean localNameEq = localName.equals(s.getNode().getName()); 
+		// if s is the root
+		if (parentStack == null) {
+			return localNameEq;
+		} else {
+			boolean ancestorOpen = parentStack.top() != null && parentStack.top().getState() == MatchState.OPEN;
+			return localNameEq && ancestorOpen;
+		}
+	}
+	
+	private static boolean descendantCondition(TPEStack s, String localName, int preOfLastOpen){
+		boolean localNameEq = s.getNode().getName().equals(localName);
+		boolean openMatch = s.top() != null && 
+				s.top().getState() == MatchState.OPEN &&
+				s.top().getStart() == preOfLastOpen;
+		
+		return localNameEq && openMatch;
+								
+	}
 
 	@Override
 	public void endElement(String uri, String localName, String qName)
@@ -47,18 +70,13 @@ public class StackEval implements ContentHandler{
 		// we need to find out if the element ending now corresponded
 		// to matches in some stacks
 		// first, get the pre number of the element that ends now:
-		if(preOfOpenNodes.isEmpty()) return;
+		//if(preOfOpenNodes.isEmpty()) return;
+		System.out.println("          Popping node " + preOfOpenNodes.peek());
 		int preOfLastOpen = preOfOpenNodes.pop();
 		// now look for Match objects having this pre number:
 		for (TPEStack s : rootStack.getDescendantStacks()){
-			if(s.getNode().getName().equals(localName) && 
-					((s.top() == null) || 
-					(s.top().getState() == MatchState.OPEN && 
-					s.top().getStart() == preOfLastOpen))){
+			if(descendantCondition(s, localName, preOfLastOpen)){
 				// all descendants of this Match have been traversed by now.
-				if(s.top() == null)
-					continue;						
-				
 				Match m = s.pop();
 				System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart());
 				// check if m has child matches for all children
@@ -68,6 +86,11 @@ public class StackEval implements ContentHandler{
 						// m lacks a child Match for the pattern node pChild
 						// we remove m from its Stack, detach it from its parent etc.
 						s.remove(m);
+						System.out.println("Something happened");
+						if(m.getParent() != null) {
+							System.out.println("unregistra");
+							m.getParent().removeChild(s.getNode(),m);
+						}
 					}
 				}
 				m.setState(MatchState.CLOSED);
@@ -119,25 +142,37 @@ public class StackEval implements ContentHandler{
 			Attributes atts) throws SAXException {
 		for(TPEStack s : rootStack.getDescendantStacks()){
 			TPEStack ps = s.getParentStack();
-			if((localName.equals(s.getNode().getName())) && ((ps == null) || (ps.top() != null) && (ps.top().getState() == MatchState.OPEN))){ // TODO check for null parentstack
-				Match m = new Match(currentPre, (ps == null)? null : ps.top() , s);
+			Match parentMatch = ps == null? null : ps.top();
+			if(ancestorCondition(s, localName)) {
+				Match m = new Match(currentPre, parentMatch , s);
 				// create a match satisfying the ancestor conditions
 				// of query node s.p
 				System.out.println("PUSH match " + m.getStack().getNode().getName() +" with id: "+ m.getStart());
 				s.push(m); 
-				preOfOpenNodes.push(currentPre);
+				if(parentMatch != null ){
+					System.out.println("register");
+
+					parentMatch.addChild(s.getNode(),m);
+				}
 				break;
 			}
 		}
-		currentPre++;
+		preOfOpenNodes.push(currentPre);
+
+		
+		System.out.println("Incing currentPre from " + currentPre + " to " + (currentPre+1) + " with name " + localName);
+		currentPre++; // incease counter for each single startElement invocation
 		for(int i=0; i<atts.getLength(); i++){
 			for (TPEStack s : rootStack.getDescendantStacks()){
-				if((atts.getLocalName(i).equals(s.getNode().getName())) && s.getParentStack().top().getState() == MatchState.OPEN) {
-					Match m = new Match(currentPre, s.getParentStack().top(), s);
-					s.push(m);
+				if(ancestorCondition(s, "@" + atts.getLocalName(i))) {
+					Match m = new Match(currentPre, s.getParentStack().top() , s);
+					System.out.println("PUSH match " + m.getStack().getNode().getName() +" with id: "+ m.getStart());
+					s.push(m); 
+					break;
 				}
+				
 			}
-			currentPre++;
+			currentPre++; // Also increase counter for each attribute in element
 		}	
 	}
 

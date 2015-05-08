@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,15 +21,30 @@ public class Match {
 		this.parent = parent;
 		this.stack = stack;
 		this.state = MatchState.OPEN;
+		this.children = new HashMap<PatternNode, List<Match>>();
 	}
 
 	public Map<PatternNode, List<Match>> getChildren() {
 		return children;
 	}
 
-	public void addChild(PatternNode childNode, List<Match> childMatches) {
-		this.children.put(childNode, childMatches);
+	public void addChild(PatternNode childNode, Match childMatch) {
+		List<Match> ms = children.get(childNode);
+		if(ms== null){
+			ms = new ArrayList<Match>();
+		}
+		ms.add(childMatch);
+		
+		this.children.put(childNode, ms);
 	}
+	
+	public void removeChild(PatternNode childNode, Match childMatch) {
+		List<Match> ms = children.get(childNode);
+		if (ms != null){
+			ms.remove(childMatch);
+		}
+	}
+
 
 	public int getStart() {
 		return start;
