@@ -44,7 +44,7 @@ public class StackEval implements ContentHandler{
 		int preOfLastOpen = preOfOpenNodes.pop();
 		// now look for Match objects having this pre number:
 		for (TPEStack s : rootStack.getDescendantStacks()){
-			if(s.node.getName() == localName && s.top().getState() == MatchState.OPEN && 
+			if(s.node.getName().equals(localName) && s.top().getState() == MatchState.OPEN && 
 					s.top().getStart() == preOfLastOpen){ // TODO include something s.top.pre
 				// all descendants of this Match have been traversed by now.
 				Match m = s.pop();
@@ -104,7 +104,7 @@ public class StackEval implements ContentHandler{
 	public void startElement(String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
 		for(TPEStack s : rootStack.getDescendantStacks()){
-			if((localName == s.node.getName()) && s.parentStack.top().getState() == MatchState.OPEN){
+			if((localName.equals(s.node.getName())) && s.parentStack.top().getState() == MatchState.OPEN){
 				Match m = new Match(currentPre, s.parentStack.top(), s);
 				// create a match satisfying the ancestor conditions
 				// of query node s.p
@@ -114,7 +114,7 @@ public class StackEval implements ContentHandler{
 		}
 		for(int i=0; i<atts.getLength(); i++){
 			for (TPEStack s : rootStack.getDescendantStacks()){
-				if((atts.getLocalName(i) == s.node.getName()) && s.parentStack.top().getState() == MatchState.OPEN) {
+				if((atts.getLocalName(i).equals(s.node.getName())) && s.parentStack.top().getState() == MatchState.OPEN) {
 					Match m = new Match(currentPre, s.parentStack.top(), s);
 					s.push(m);
 				}
