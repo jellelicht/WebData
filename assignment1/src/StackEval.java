@@ -2,7 +2,6 @@ import java.util.Stack;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.DocumentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
@@ -18,10 +17,16 @@ Stack < Integer > preOfOpenNodes;
 
 public class StackEval implements ContentHandler{
 
-	TPEStack rootStack;
-	int currentPre = 0; // pre number of the last element which has started
-	Stack <Integer> preOfOpenNodes; // pre numbers for all elements having started but not ended yet
+	private TPEStack rootStack;
+	private int currentPre = 0; // pre number of the last element which has started
+	private Stack <Integer> preOfOpenNodes; // pre numbers for all elements having started but not ended yet
 	
+	
+	public StackEval(TPEStack rootStack) {
+		super();
+		this.rootStack = rootStack;
+	}
+
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
@@ -44,13 +49,13 @@ public class StackEval implements ContentHandler{
 		int preOfLastOpen = preOfOpenNodes.pop();
 		// now look for Match objects having this pre number:
 		for (TPEStack s : rootStack.getDescendantStacks()){
-			if(s.node.getName().equals(localName) && s.top().getState() == MatchState.OPEN && 
+			if(s.getNode().getName().equals(localName) && s.top().getState() == MatchState.OPEN && 
 					s.top().getStart() == preOfLastOpen){ // TODO include something s.top.pre
 				// all descendants of this Match have been traversed by now.
 				Match m = s.pop();
 				// check if m has child matches for all children
 				// of its pattern node
-				for (PatternNode child : s.node.getChildren()){
+				for (PatternNode child : s.getNode().getChildren()){
 					if(m.getChildren().get(child) == null){
 						// m lacks a child Match for the pattern node pChild
 						// we remove m from its Stack, detach it from its parent etc.
@@ -104,8 +109,8 @@ public class StackEval implements ContentHandler{
 	public void startElement(String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
 		for(TPEStack s : rootStack.getDescendantStacks()){
-			if((localName.equals(s.node.getName())) && s.parentStack.top().getState() == MatchState.OPEN){
-				Match m = new Match(currentPre, s.parentStack.top(), s);
+			if((localName.equals(s.getNode().getName())) && s.getParentStack().top().getState() == MatchState.OPEN){ // TODO check for null parentstack
+				Match m = new Match(currentPre, s.getParentStack().top(), s);
 				// create a match satisfying the ancestor conditions
 				// of query node s.p
 				s.push(m); preOfOpenNodes.push(currentPre);
@@ -114,8 +119,8 @@ public class StackEval implements ContentHandler{
 		}
 		for(int i=0; i<atts.getLength(); i++){
 			for (TPEStack s : rootStack.getDescendantStacks()){
-				if((atts.getLocalName(i).equals(s.node.getName())) && s.parentStack.top().getState() == MatchState.OPEN) {
-					Match m = new Match(currentPre, s.parentStack.top(), s);
+				if((atts.getLocalName(i).equals(s.getNode().getName())) && s.getParentStack().top().getState() == MatchState.OPEN) {
+					Match m = new Match(currentPre, s.getParentStack().top(), s);
 					s.push(m);
 				}
 			}

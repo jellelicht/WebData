@@ -4,11 +4,20 @@ import java.util.Stack;
 
 
 public class TPEStack {
-	PatternNode node;
-	Stack < Match> matches;
-	TPEStack parentStack; // Null if no parent == root of tree
-	List<TPEStack> childrenStacks;
+	private PatternNode node;
+	private Stack < Match> matches;
+	private TPEStack parentStack; // Null if no parent == root of tree
+	private List<TPEStack> childrenStacks;
 	
+	public PatternNode getNode() {
+		return node;
+	}
+	public Stack<Match> getMatches() {
+		return matches;
+	}
+	public TPEStack getParentStack() {
+		return parentStack;
+	}
 	public void push(Match m) { matches.push(m); }
 	public Match top() { return matches.peek(); }
 	public Match pop() { return matches.pop(); }
