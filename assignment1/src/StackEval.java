@@ -25,6 +25,7 @@ public class StackEval implements ContentHandler{
 	public StackEval(TPEStack rootStack) {
 		super();
 		this.rootStack = rootStack;
+		this.preOfOpenNodes = new Stack<Integer>();
 	}
 
 	@Override
@@ -109,8 +110,9 @@ public class StackEval implements ContentHandler{
 	public void startElement(String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
 		for(TPEStack s : rootStack.getDescendantStacks()){
-			if((localName.equals(s.getNode().getName())) && s.getParentStack().top().getState() == MatchState.OPEN){ // TODO check for null parentstack
-				Match m = new Match(currentPre, s.getParentStack().top(), s);
+			TPEStack ps = s.getParentStack();
+			if((localName.equals(s.getNode().getName())) && ((ps == null) || (ps.top() != null) && (ps.top().getState() == MatchState.OPEN))){ // TODO check for null parentstack
+				Match m = new Match(currentPre, (ps == null)? null : ps.top() , s);
 				// create a match satisfying the ancestor conditions
 				// of query node s.p
 				s.push(m); preOfOpenNodes.push(currentPre);

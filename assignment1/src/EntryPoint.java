@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.List;
 
 import org.xml.sax.XMLReader;
@@ -8,7 +9,7 @@ import org.xml.sax.SAXException;
 
 public class EntryPoint {
 
-	public static void main(String[] args) throws SAXException {
+	public static void main(String[] args) throws SAXException, IOException {
 		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false).addChild( 
 				new PatternNode("person", NodeType.ELEMENT, false)
 				.addChild(new PatternNode("email", NodeType.ELEMENT, true))
@@ -18,8 +19,10 @@ public class EntryPoint {
 		System.out.println("hello");
 		
 		XMLReader saxReader = 
-			    XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+			    //XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+			    XMLReaderFactory.createXMLReader();
 		saxReader.setContentHandler(new StackEval(generate(root, null)));
+		saxReader.parse("sample/sampleXML.xml");
 	}
 	
 	public static TPEStack generate (PatternNode root, TPEStack parent){

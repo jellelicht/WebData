@@ -19,7 +19,7 @@ public class TPEStack {
 		return parentStack;
 	}
 	public void push(Match m) { matches.push(m); }
-	public Match top() { return matches.peek(); }
+	public Match top() { return (matches.size() > 0)? matches.peek(): null; }
 	public Match pop() { return matches.pop(); }
 	public void remove(Match m) { matches.remove(m); }
 	
