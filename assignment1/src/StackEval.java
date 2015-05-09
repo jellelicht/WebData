@@ -20,7 +20,7 @@ public class StackEval implements ContentHandler{
 	private TPEStack rootStack;
 	private int currentPre = 1; // pre number of the last element which has started
 	private Stack <Integer> preOfOpenNodes; // pre numbers for all elements having started but not ended yet
-	
+	private String value;
 	
 	public StackEval(TPEStack rootStack) {
 		super();
@@ -31,6 +31,7 @@ public class StackEval implements ContentHandler{
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
+		value = new String(ch,start,length);
 		// TODO Auto-generated method stub
 		
 	}
@@ -71,14 +72,15 @@ public class StackEval implements ContentHandler{
 		// to matches in some stacks
 		// first, get the pre number of the element that ends now:
 		//if(preOfOpenNodes.isEmpty()) return;
-		System.out.println("          Popping node " + preOfOpenNodes.peek());
+		//System.out.println("          Popping node " + preOfOpenNodes.peek());
 		int preOfLastOpen = preOfOpenNodes.pop();
 		// now look for Match objects having this pre number:
 		for (TPEStack s : rootStack.getDescendantStacks()){
 			if(descendantCondition(s, localName, preOfLastOpen)){
 				// all descendants of this Match have been traversed by now.
-				Match m = s.pop();
-				System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart());
+				Match m = s.top();
+				m.setState(MatchState.CLOSED);
+				System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + value);
 				// check if m has child matches for all children
 				// of its pattern node
 				for (PatternNode child : s.getNode().getChildren()){
@@ -91,9 +93,9 @@ public class StackEval implements ContentHandler{
 							System.out.println("unregistra");
 							m.getParent().removeChild(s.getNode(),m);
 						}
+						break;
 					}
 				}
-				m.setState(MatchState.CLOSED);
 			}
 		}
 	}
@@ -160,7 +162,7 @@ public class StackEval implements ContentHandler{
 		preOfOpenNodes.push(currentPre);
 
 		
-		System.out.println("Incing currentPre from " + currentPre + " to " + (currentPre+1) + " with name " + localName);
+		//System.out.println("Incing currentPre from " + currentPre + " to " + (currentPre+1) + " with name " + localName);
 		currentPre++; // incease counter for each single startElement invocation
 		for(int i=0; i<atts.getLength(); i++){
 			for (TPEStack s : rootStack.getDescendantStacks()){

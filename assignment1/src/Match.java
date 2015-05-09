@@ -66,7 +66,10 @@ public class Match {
 		this.state = state;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "";
+	}
 }
 
 /*
