@@ -116,10 +116,5 @@ public class MatchPrinter {
 			}
 		}
 		return tuples;
-	}
-	
-
-	
-	
-	
+	}	
 }
