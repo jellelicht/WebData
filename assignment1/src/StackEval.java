@@ -117,8 +117,12 @@ public class StackEval implements ContentHandler{
 			if(descendantCondition(s, localName, preOfLastOpen)){
 				// all descendants of this Match have been traversed by now.
 				Match m = s.top();
+				boolean predMatch = true;
 				if(value.length() > 0) {
 					m.setValue(value);
+					if(!s.getNode().fullfillsPredicate(value)){
+						predMatch = false;
+					}
 					System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + m.getValue());
 				}
 				m.setState(MatchState.CLOSED);
@@ -137,6 +141,14 @@ public class StackEval implements ContentHandler{
 						}
 						break;
 					}
+				}
+				if(!predMatch){
+					s.remove(m); //pred did not match
+					if(m.getParent() != null) {
+						
+						m.getParent().removeChild(s.getNode(),m);
+					}
+					System.out.println("Gone");
 				}
 			}
 		}
