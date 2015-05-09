@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -24,9 +25,9 @@ public class EntryPoint {
 		TPEStack stack = generate(root, null);
 		saxReader.setContentHandler(new StackEval(stack));
 		saxReader.parse("sample/sampleXML.xml");
-		
+
 		System.out.println("hi");
-		
+		MatchPrinter(stack.top(), "");
 	}
 	
 	public static TPEStack generate (PatternNode root, TPEStack parent){
@@ -39,5 +40,24 @@ public class EntryPoint {
 			ts.addChildStack(generate(child, ts));
 		}
 		return ts;
+	}
+	
+	public static void MatchPrinter(Match m, String acc) {
+		 Map<PatternNode, List<Match>> children = m.getChildren();
+		 acc = acc + " " + m.getStart();
+		 if (children.isEmpty()) {
+			 System.out.println(acc);
+			 return;
+		 }
+		 int cnt = 0;
+		 String markedAcc;
+		 for(List<Match> listChild : children.values()){
+			 markedAcc = acc + "[" + cnt + "]";
+			 
+			 for(Match child : listChild) {
+				 cnt++;
+				 MatchPrinter(child, markedAcc); 
+			 }
+		 }
 	}
 }
