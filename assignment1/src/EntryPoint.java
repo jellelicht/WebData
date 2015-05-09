@@ -14,12 +14,12 @@ public class EntryPoint {
 
 	public static void main(String[] args) throws SAXException, IOException {
 
-		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false).addChild( 
-				new PatternNode("person", NodeType.ELEMENT, false, false,false,false)
-				.addChild(new PatternNode("email", NodeType.ELEMENT, false, true,false,true))
-				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false)
+		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance()).addChild( 
+				new PatternNode("person", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
+				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false,true, AnyPredicate.getInstance()))
+				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
 								.addChild(new PatternNode("last",
-										NodeType.ELEMENT, true, true,false,true))));
+										NodeType.ELEMENT, true, true,false,true, new StringPredicate("Hart")))));
 		System.out.println("hello");
 		
 		XMLReader saxReader = 
