@@ -1,6 +1,8 @@
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -11,12 +13,12 @@ import org.xml.sax.SAXException;
 public class EntryPoint {
 
 	public static void main(String[] args) throws SAXException, IOException {
-		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false).addChild( 
-				new PatternNode("person", NodeType.ELEMENT, false)
-				.addChild(new PatternNode("email", NodeType.ELEMENT, true))
-				.addChild(new PatternNode("name", NodeType.ELEMENT, false)
+		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false).addChild( 
+				new PatternNode("person", NodeType.ELEMENT, false, false)
+				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true))
+				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false)
 								.addChild(new PatternNode("last",
-										NodeType.ELEMENT, true))));
+										NodeType.ELEMENT, true, true))));
 		System.out.println("hello");
 		
 		XMLReader saxReader = 
@@ -27,7 +29,14 @@ public class EntryPoint {
 		saxReader.parse("sample/sampleXML.xml");
 
 		System.out.println("hi");
-		MatchPrinter(stack.top(), "");
+		//cMatchPrinter(stack.top(), "");
+		List<Map<PatternNode, Integer>> o = MatchPrinter.generateRoutes(stack.top(), new HashMap<PatternNode, Integer>());
+		for(Map<PatternNode, Integer> route : MatchPrinter.generateTuples(o)){
+			System.out.println(MatchPrinter.printRoute(route));
+			System.out.println(MatchPrinter.printFilteredRoute(route));
+		}
+		//MatchPrinter.printRoute(route);
+		System.out.println("done");
 	}
 	
 	public static TPEStack generate (PatternNode root, TPEStack parent){
@@ -42,21 +51,22 @@ public class EntryPoint {
 		return ts;
 	}
 	
-	public static void MatchPrinter(Match m, String acc) {
+	
+	public static void cMatchPrinter(Match m, String acc) {
 		 Map<PatternNode, List<Match>> children = m.getChildren();
-		 acc = acc + " " + m.getStart();
+		 //if(m.getStack().getNode().isRequired()) {
+			 //acc = acc + " "+ m.getStack().getNode().getName() + " " + m.getStart();
+		 	acc = acc + " " + m.getStart();
+		 //}
 		 if (children.isEmpty()) {
 			 System.out.println(acc);
 			 return;
 		 }
-		 int cnt = 0;
 		 String markedAcc;
-		 for(List<Match> listChild : children.values()){
-			 markedAcc = acc + "[" + cnt + "]";
-			 
-			 for(Match child : listChild) {
-				 cnt++;
-				 MatchPrinter(child, markedAcc); 
+		 for(Entry<PatternNode, List<Match>> listChild : children.entrySet()){
+			 markedAcc = acc + " [" + listChild.getKey().getName() + "]->";
+			 for(Match child : listChild.getValue()) {
+ 				 cMatchPrinter(child, markedAcc); 
 			 }
 		 }
 	}
