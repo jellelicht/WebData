@@ -84,7 +84,7 @@ public class StackEval implements ContentHandler{
 				// check if m has child matches for all children
 				// of its pattern node
 				for (PatternNode child : s.getNode().getChildren()){
-					if(m.getChildren().get(child) == null){
+					if(m.getChildren().get(child) == null && child.isRequired()){
 						// m lacks a child Match for the pattern node pChild
 						// we remove m from its Stack, detach it from its parent etc.
 						s.remove(m);
