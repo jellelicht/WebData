@@ -11,9 +11,10 @@ public class PatternNode {
 
 	private boolean result;
 	private boolean wildcard;
-	
+	private boolean full;
+
 	public PatternNode(String name, NodeType type,
-			boolean required, boolean result, boolean wildcard) {
+			boolean required, boolean result, boolean wildcard, boolean full) {
 		super();
 		this.name = name;
 		this.type = type;
@@ -21,6 +22,7 @@ public class PatternNode {
 		this.children = new ArrayList<PatternNode>();
 		this.result = result;
 		this.wildcard = wildcard;
+		this.full = full;
 	}
 
 	public boolean isResult() {
@@ -34,7 +36,15 @@ public class PatternNode {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public boolean isFull() {
+		return full;
+	}
 
+	public void setFull(boolean full) {
+		this.full = full;
+	}
+	
 	public NodeType getType() {
 		return type;
 	}
