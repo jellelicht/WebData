@@ -68,6 +68,14 @@ public class MatchPrinter {
 		}
 		return heading + tuplesString;
 	}
+	public static String printFilteredTupleTable(List<Map<PatternNode, String>> tuples, PatternNode root){
+		String heading = printFilteredTupleHeading(root);
+		String tuplesString = "";
+		for(Map<PatternNode, String> tuple: tuples){
+			tuplesString += "\n" + printFilteredTuple(tuple, root);
+		}
+		return heading + tuplesString;
+	}
 	private static String printTupleHeading(PatternNode root){
 		String acc = "";
 		for (PatternNode p : root.getOrderedSubTree()){
@@ -76,6 +84,18 @@ public class MatchPrinter {
 		return acc;
 			
 	}
+	private static String printFilteredTupleHeading(PatternNode root){
+		String acc = "";
+		for (PatternNode p : root.getOrderedSubTree()){
+			if(!p.isResult()){
+				continue;
+			}
+			acc += "\t\t" + p.getName();
+		}
+		return acc;
+			
+	}
+	
 	private static String printTuple(Map<PatternNode, String> tuple, PatternNode root){
 		String acc = "";
 		for (PatternNode p : root.getOrderedSubTree()){
@@ -89,6 +109,27 @@ public class MatchPrinter {
 			} else {
 				acc += placeholder;
 			}
+		}
+		return acc;
+	}
+	
+	private static String printFilteredTuple(Map<PatternNode, String> tuple, PatternNode root){
+		String acc = "";
+		for (PatternNode p : root.getOrderedSubTree()){
+			if(!p.isResult()) {
+				continue;
+			}
+			String name = p.getName();
+			String retval = tuple.get(p);
+			String placeholder;
+			if(retval != null){
+				placeholder = "<" + name + ">" + retval + "</" + name + ">";
+			} else {
+				placeholder = "null\t\t";
+			}			
+			acc += "\t\t";
+			acc += placeholder;
+			
 		}
 		return acc;
 	}

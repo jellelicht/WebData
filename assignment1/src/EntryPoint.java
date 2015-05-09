@@ -16,7 +16,7 @@ public class EntryPoint {
 
 		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false).addChild( 
 				new PatternNode("person", NodeType.ELEMENT, false, false,false,false)
-				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false,true))
+				.addChild(new PatternNode("email", NodeType.ELEMENT, false, true,false,true))
 				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false)
 								.addChild(new PatternNode("last",
 										NodeType.ELEMENT, true, true,false,true))));
@@ -28,7 +28,7 @@ public class EntryPoint {
 		saxReader.setContentHandler(new StackEval(stack));
 		saxReader.parse("sample/sampleXML.xml");
 		List<Map<PatternNode, String>> tuples = MatchPrinter.extractTuples(stack.top());
-		System.out.println(MatchPrinter.printTupleTable(tuples, root));
+		System.out.println(MatchPrinter.printFilteredTupleTable(tuples, root));
 
 	}
 	
