@@ -9,13 +9,20 @@ public class PatternNode {
 	private boolean required;
 	private List<PatternNode> children;
 	
+	private boolean result;
+	
 	public PatternNode(String name, NodeType type,
-			boolean required) {
+			boolean required, boolean result) {
 		super();
 		this.name = name;
 		this.type = type;
 		this.required = required;
 		this.children = new ArrayList<PatternNode>();
+		this.result = result;
+	}
+
+	public boolean isResult() {
+		return result;
 	}
 
 	public String getName() {
