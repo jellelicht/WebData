@@ -12,7 +12,7 @@ public class MatchPrinter {
 		PatternNode node = m.getStack().getNode();
 		
 		String pre = "";
-		if(node.isFull()){
+		if(node.isfullRepresentation()){
 			pre = String.valueOf(m.getValue());
 		}
 		else {
