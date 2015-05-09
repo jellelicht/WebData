@@ -13,12 +13,12 @@ import org.xml.sax.SAXException;
 public class EntryPoint {
 
 	public static void main(String[] args) throws SAXException, IOException {
-		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false).addChild( 
-				new PatternNode("person", NodeType.ELEMENT, false, false,false)
-				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false))
-				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false)
+		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false).addChild( 
+				new PatternNode("person", NodeType.ELEMENT, false, false,false,false)
+				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false,true))
+				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false)
 								.addChild(new PatternNode("last",
-										NodeType.ELEMENT, true, true,false))));
+										NodeType.ELEMENT, true, true,false,true))));
 		System.out.println("hello");
 		
 		XMLReader saxReader = 
@@ -30,10 +30,11 @@ public class EntryPoint {
 
 		System.out.println("hi");
 		//cMatchPrinter(stack.top(), "");
-		List<Map<PatternNode, Integer>> o = MatchPrinter.generateRoutes(stack.top(), new HashMap<PatternNode, Integer>());
-		for(Map<PatternNode, Integer> route : MatchPrinter.generateTuples(o)){
-			System.out.println(MatchPrinter.printRoute(route));
-			System.out.println(MatchPrinter.printFilteredRoute(route));
+		List<Map<PatternNode, String>> o = MatchPrinter.generateRoutes(stack.top(), new HashMap<PatternNode, String>());
+		for(Map<PatternNode, String> route : MatchPrinter.generateTuples(o)){
+			//System.out.println(MatchPrinter.printRoute(route));
+			//System.out.println(MatchPrinter.printFilteredRoute(route));
+			System.out.println(MatchPrinter.printFilteredRouteComplete(route));
 		}
 		//MatchPrinter.printRoute(route);
 		System.out.println("done");
