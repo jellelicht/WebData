@@ -12,9 +12,11 @@ public class PatternNode {
 	private boolean result;
 	private boolean wildcard;
 	private boolean fullRepresentation;
+	
+	private Predicate pred;
 
 	public PatternNode(String name, NodeType type,
-			boolean required, boolean result, boolean wildcard, boolean fullRepresentation) {
+			boolean required, boolean result, boolean wildcard, boolean fullRepresentation, Predicate pred) {
 		super();
 		this.name = name;
 		this.type = type;
@@ -23,6 +25,7 @@ public class PatternNode {
 		this.result = result;
 		this.wildcard = wildcard;
 		this.fullRepresentation = fullRepresentation;
+		this.pred = pred;
 	}
 
 	public boolean isResult() {
@@ -67,6 +70,11 @@ public class PatternNode {
 
 	public void setWildcard(boolean wildcard) {
 		this.wildcard = wildcard;
+	}
+	
+	public boolean fullfillsPredicate(String s){
+		
+		return pred.isMatch(s);
 	}
 	
 	public List<PatternNode> getChildren() {
