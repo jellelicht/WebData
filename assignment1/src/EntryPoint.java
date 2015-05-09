@@ -14,12 +14,12 @@ public class EntryPoint {
 
 	public static void main(String[] args) throws SAXException, IOException {
 
-		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false).addChild( 
-				new PatternNode("person", NodeType.ELEMENT, false, false,false)
-				.addChild(new PatternNode("email", NodeType.ELEMENT, false, true,false))
-				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false)
+		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false).addChild( 
+				new PatternNode("person", NodeType.ELEMENT, false, false,false,false)
+				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false,true))
+				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false)
 								.addChild(new PatternNode("last",
-										NodeType.ELEMENT, true, true,false))));
+										NodeType.ELEMENT, true, true,false,true))));
 		System.out.println("hello");
 		
 		XMLReader saxReader = 
@@ -27,9 +27,9 @@ public class EntryPoint {
 		TPEStack stack = generate(root, null);
 		saxReader.setContentHandler(new StackEval(stack));
 		saxReader.parse("sample/sampleXML.xml");
-
-		List<Map<PatternNode, Integer>> tuples = MatchPrinter.extractTuples(stack.top());
+		List<Map<PatternNode, String>> tuples = MatchPrinter.extractTuples(stack.top());
 		System.out.println(MatchPrinter.printTupleTable(tuples, root));
+
 	}
 	
 	public static TPEStack generate (PatternNode root, TPEStack parent){

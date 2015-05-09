@@ -31,7 +31,7 @@ public class StackEval implements ContentHandler{
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
-		value = new String(ch,start,length);
+		value = new String(ch,start,length).trim();
 		// TODO Auto-generated method stub
 		
 	}
@@ -87,13 +87,12 @@ public class StackEval implements ContentHandler{
 		}
 		preOfOpenNodes.push(currentPre);
 
-		
 		//System.out.println("Incing currentPre from " + currentPre + " to " + (currentPre+1) + " with name " + localName);
 		currentPre++; // incease counter for each single startElement invocation
 		for(int i=0; i<atts.getLength(); i++){
 			for (TPEStack s : rootStack.getDescendantStacks()){
 				if(ancestorCondition(s, "@" + atts.getLocalName(i))) {
-					Match m = new Match(currentPre, s.getParentStack().top() , s);
+					Match m = new Match(currentPre, s.getParentStack().top(), s);
 					//System.out.println("PUSH match " + m.getStack().getNode().getName() +" with id: "+ m.getStart());
 					s.push(m); 
 					break;
@@ -118,6 +117,10 @@ public class StackEval implements ContentHandler{
 			if(descendantCondition(s, localName, preOfLastOpen)){
 				// all descendants of this Match have been traversed by now.
 				Match m = s.top();
+				if(value.length() > 0) {
+					m.setValue(value);
+					System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + m.getValue());
+				}
 				m.setState(MatchState.CLOSED);
 				//System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + value);
 				// check if m has child matches for all children

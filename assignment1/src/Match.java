@@ -7,6 +7,8 @@ import java.util.Map;
 public class Match {
 	private int start; // refers to node id
 	
+	private String value;
+
 	private MatchState state;
 
 	Match parent;
@@ -22,6 +24,7 @@ public class Match {
 		this.stack = stack;
 		this.state = MatchState.OPEN;
 		this.children = new HashMap<PatternNode, List<Match>>();
+		this.value = "";
 	}
 
 	public Map<PatternNode, List<Match>> getChildren() {
@@ -45,6 +48,13 @@ public class Match {
 		}
 	}
 
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 	public int getStart() {
 		return start;

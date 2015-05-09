@@ -7,20 +7,27 @@ import java.util.Map.Entry;
 
 public class MatchPrinter {
 
-	private static List<Map<PatternNode, Integer>> generateRoutes(Match m, Map<PatternNode, Integer> cache){
+	public static List<Map<PatternNode, String>> generateRoutes(Match m, Map<PatternNode, String> cache){
 		Map<PatternNode, List<Match>> children = m.getChildren();
 		PatternNode node = m.getStack().getNode();
 		
-		Integer pre = m.getStart();
+		String pre = "";
+		if(node.isfullRepresentation()){
+			pre = String.valueOf(m.getValue());
+		}
+		else {
+			pre = String.valueOf(m.getStart());
+		}
+		
 		cache.put(node, pre);
-		List<Map<PatternNode, Integer>> routes = new ArrayList<Map<PatternNode, Integer>>();
+		List<Map<PatternNode, String>> routes = new ArrayList<Map<PatternNode, String>>();
 		if (children.isEmpty()) {
 			routes.add(cache);
 			return routes;
 		}
 		for(Entry<PatternNode, List<Match>> listChild : children.entrySet()){
 			for(Match child : listChild.getValue()) {
-				Map<PatternNode, Integer> placeholder = new HashMap<PatternNode, Integer>();
+				Map<PatternNode, String> placeholder = new HashMap<PatternNode, String>();
 				placeholder.putAll(cache);
 				routes.addAll(generateRoutes(child, placeholder));
 			}
@@ -28,32 +35,35 @@ public class MatchPrinter {
 		}
 		return routes;
 	}
-	public static List<Map<PatternNode, Integer>> extractTuples(Match m){
-		List<Map<PatternNode, Integer>> routes = generateRoutes(m, new HashMap<PatternNode, Integer>());
+	
+	public static List<Map<PatternNode, String>> extractTuples(Match m){
+		List<Map<PatternNode, String>> routes = generateRoutes(m, new HashMap<PatternNode, String>());
 		return generateTuples(routes);
 	}
 	
-	public static String printRoute(Map<PatternNode, Integer> route){
+	public static String printRoute(Map<PatternNode, String> route){
 		String acc = "";
-		for(Entry<PatternNode, Integer> e : route.entrySet()){
+		for(Entry<PatternNode, String> e : route.entrySet()){
 			acc += "\t" + e.getKey().getName() + " = " + e.getValue();
 		}
 		return acc;
 	}
-	public static String printFilteredRoute(Map<PatternNode, Integer> route){
 
+	
+	public static String printFilteredRoute(Map<PatternNode, String> route){
 		String acc = "";
-		for(Entry<PatternNode, Integer> e : route.entrySet()){
+		for(Entry<PatternNode, String> e : route.entrySet()){
 			if(e.getKey().isResult()){
 				acc += "\t" + e.getKey().getName() + " = " + e.getValue();
 			}
 		}
 		return acc;
 	}
-	public static String printTupleTable(List<Map<PatternNode, Integer>> tuples, PatternNode root){
+
+	public static String printTupleTable(List<Map<PatternNode, String>> tuples, PatternNode root){
 		String heading = printTupleHeading(root);
 		String tuplesString = "";
-		for(Map<PatternNode, Integer> tuple: tuples){
+		for(Map<PatternNode, String> tuple: tuples){
 			tuplesString += "\n" + printTuple(tuple, root);
 		}
 		return heading + tuplesString;
@@ -66,11 +76,11 @@ public class MatchPrinter {
 		return acc;
 			
 	}
-	private static String printTuple(Map<PatternNode, Integer> tuple, PatternNode root){
+	private static String printTuple(Map<PatternNode, String> tuple, PatternNode root){
 		String acc = "";
 		for (PatternNode p : root.getOrderedSubTree()){
 			//acc += "\t" + p.getName();
-			Integer placeholder = tuple.get(p);
+			String placeholder = tuple.get(p);
 			acc += "\t\t";
 			if(placeholder == null){
 				acc += "null";
@@ -82,8 +92,22 @@ public class MatchPrinter {
 		}
 		return acc;
 	}
-	public static Map<PatternNode, Integer> mergeRoute(Map<PatternNode, Integer> route1, Map<PatternNode, Integer> route2){
-		Map<PatternNode, Integer> retval = new HashMap<PatternNode, Integer>();
+
+	
+	public static String printFilteredRouteComplete(Map<PatternNode, String> route){
+		String acc = "";
+		for(Entry<PatternNode, String> e : route.entrySet()){
+			if(e.getKey().isResult()){
+				acc += "\t<" + e.getKey().getName() + ">" + e.getValue() + "</" + e.getKey().getName() + "> ";			
+			}
+			
+		}
+		return acc;
+	}
+
+	
+	public static Map<PatternNode, String> mergeRoute(Map<PatternNode, String> route1, Map<PatternNode, String> route2){
+		Map<PatternNode, String> retval = new HashMap<PatternNode, String>();
 		for(PatternNode n : route1.keySet()){
 			if(route2.containsKey(n)){
 				if(!route1.get(n).equals(route2.get(n))){
@@ -96,12 +120,12 @@ public class MatchPrinter {
 		return retval;
 	}
 	
-	public static List<Map<PatternNode, Integer>> generateTuples(List<Map<PatternNode, Integer>> routes){
-		List<Map<PatternNode, Integer>> tuples = new ArrayList<Map<PatternNode, Integer>>();
+	public static List<Map<PatternNode, String>> generateTuples(List<Map<PatternNode, String>> routes){
+		List<Map<PatternNode, String>> tuples = new ArrayList<Map<PatternNode, String>>();
 		Map<Integer, Boolean> merged = new HashMap<Integer, Boolean>();
 		for(int i=0; i<routes.size(); i++){
 			for(int j=0; j<i; j++){
-				Map<PatternNode, Integer> placeholder = mergeRoute(routes.get(i), routes.get(j));
+				Map<PatternNode, String> placeholder = mergeRoute(routes.get(i), routes.get(j));
 				if(placeholder != null){
 					merged.put(i, true);
 					merged.put(j, true);
