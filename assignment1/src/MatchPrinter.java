@@ -95,7 +95,7 @@ public class MatchPrinter {
 			if(!p.isResult()){
 				continue;
 			}
-			acc += "\t\t" + p.getName();
+			acc += "\t\t" + p.getName() + "\t\t";
 		}
 		return acc;
 			
@@ -139,10 +139,13 @@ public class MatchPrinter {
 			String retval = tuple.get(p);
 			String placeholder;
 			if(retval != null){
-				placeholder = "<" + name + ">" + retval + "</" + name + ">";
+				if(p.isfullRepresentation())
+					placeholder = "<" + name + ">" + retval + "</" + name + ">";
+				else
+					placeholder = retval + "\t\t";
 			} else {
 				placeholder = "null\t\t";
-			}			
+			}					
 			acc += "\t\t";
 			acc += placeholder;
 			
