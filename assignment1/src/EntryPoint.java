@@ -14,12 +14,38 @@ public class EntryPoint {
 
 	public static void main(String[] args) throws SAXException, IOException {
 
+		/*
+		 * This case should only return 
+		 * 		<email>a@home</email>		<last>Hart</last>
+				<email>a@work</email>		<last>Hart</last>
+				But this also returns
+				<email>m@home</email>		null
+				
+				I just noticed that this wrong answer occurs in this branch, while it was correct on jelle-awesome branch :|
+		 */
 		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance()).addChild( 
 				new PatternNode("person", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
 				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false,true, AnyPredicate.getInstance()))
 				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
 								.addChild(new PatternNode("last",
 										NodeType.ELEMENT, true, true,false,true, new StringPredicate("Hart")))));
+
+		/*
+		 * This case should only return 
+		 * <first>Mary</first>		<last>Jones</last>
+		 * but it returns wrong answer
+		 * Note: this is a query from the book p.132 Query q4.
+		*/
+		/*
+		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance()).addChild( 
+				new PatternNode("person", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
+				.addChild(new PatternNode("email", NodeType.ELEMENT, true, false,false,false, new StringPredicate("m@home")))
+				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
+								.addChild(new PatternNode("first",NodeType.ELEMENT, true, true,false,false, AnyPredicate.getInstance()))
+								.addChild(new PatternNode("last",NodeType.ELEMENT, true, true,false,false, AnyPredicate.getInstance()))));
+		*/
+
+
 		System.out.println("hello");
 		
 		XMLReader saxReader = 
