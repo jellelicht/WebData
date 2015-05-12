@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 
 public class MatchPrinter {
@@ -64,7 +65,9 @@ public class MatchPrinter {
 		String heading = printTupleHeading(root);
 		String tuplesString = "";
 		for(Map<PatternNode, String> tuple: tuples){
-			tuplesString += "\n" + printTuple(tuple, root);
+			if(isCompleteTuple(tuple, root)){
+				tuplesString += "\n" + printTuple(tuple, root);
+			}
 		}
 		return heading + tuplesString;
 	}
@@ -72,7 +75,9 @@ public class MatchPrinter {
 		String heading = printFilteredTupleHeading(root);
 		String tuplesString = "";
 		for(Map<PatternNode, String> tuple: tuples){
-			tuplesString += "\n" + printFilteredTuple(tuple, root);
+			if(isCompleteTuple(tuple, root)){
+				tuplesString += "\n" + printFilteredTuple(tuple, root);
+			}
 		}
 		return heading + tuplesString;
 	}
@@ -111,6 +116,17 @@ public class MatchPrinter {
 			}
 		}
 		return acc;
+	}
+	
+	private static boolean isCompleteTuple(Map<PatternNode, String> tuple, PatternNode root){
+		for (PatternNode p : root.getOrderedSubTree()){
+			String retval = tuple.get(p);
+			if(p.isRequired() && retval == null) {
+				System.out.println(p.getName() + " is required, but retval is null...");
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	private static String printFilteredTuple(Map<PatternNode, String> tuple, PatternNode root){
@@ -162,6 +178,7 @@ public class MatchPrinter {
 	}
 	
 	public static List<Map<PatternNode, String>> generateTuples(List<Map<PatternNode, String>> routes){
+		int rsize = routes.size();
 		List<Map<PatternNode, String>> tuples = new ArrayList<Map<PatternNode, String>>();
 		Map<Integer, Boolean> merged = new HashMap<Integer, Boolean>();
 		for(int i=0; i<routes.size(); i++){
@@ -180,6 +197,44 @@ public class MatchPrinter {
 				tuples.add(routes.get(i));
 			}
 		}
-		return tuples;
-	}	
+		if(rsize == tuples.size()){
+			return deduplicateTuples(tuples);
+		} else {
+			return generateTuples(tuples); // for nested subtrees that need to be merged many times...
+		}
+		
+	}
+	
+	public static List<Map<PatternNode, String>> deduplicateTuples(List<Map<PatternNode, String>> tuples){
+		List<Map<PatternNode, String>> retval = new ArrayList<Map<PatternNode, String>>();
+		Map<Integer, Boolean> duplicates = new HashMap<Integer, Boolean>();
+		for(int i=0; i<tuples.size(); i++){
+			for(int j=0; j<i; j++){
+				if(isDuplicate(tuples.get(i), tuples.get(j))){
+					duplicates.put(j, true);
+				}			
+			}
+		}
+		for(int i=0; i<tuples.size(); i++){
+			if(duplicates.get(i) == null){
+				retval.add(tuples.get(i));
+			}
+		}
+		return retval;
+	}
+	
+	public static boolean isDuplicate(Map<PatternNode, String> t1, Map<PatternNode, String> t2){
+		Set<PatternNode> k1 = t1.keySet();
+		Set<PatternNode> k2 = t2.keySet();
+		boolean samesize = k1.size() == k2.size();
+		if(!samesize) return false;
+		boolean samekeys = k1.containsAll(k2);
+		if(!samekeys) return false;
+		for(PatternNode p : k1){
+			if(!t1.get(p).equals(t2.get(p))){
+				return false;
+			}
+		}
+		return true;
+	}
 }
