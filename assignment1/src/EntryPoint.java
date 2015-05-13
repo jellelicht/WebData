@@ -13,31 +13,49 @@ import org.xml.sax.SAXException;
 public class EntryPoint {
 
 	public static void main(String[] args) throws SAXException, IOException {
+
+		/*
+		 * This case should only return 
+		 * 		<email>a@home</email>		<last>Hart</last>
+				<email>a@work</email>		<last>Hart</last>
+				But this also returns
+				<email>m@home</email>		null
+				
+				I just noticed that this wrong answer occurs in this branch, while it was correct on jelle-awesome branch :|
+		 */
 		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance()).addChild( 
 				new PatternNode("person", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
 				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false,true, AnyPredicate.getInstance()))
 				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
 								.addChild(new PatternNode("last",
 										NodeType.ELEMENT, true, true,false,true, new StringPredicate("Hart")))));
+
+		/*
+		 * This case should only return 
+		 * <first>Mary</first>		<last>Jones</last>
+		 * but it returns wrong answer
+		 * Note: this is a query from the book p.132 Query q4.
+		*/
+		/*
+		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance()).addChild( 
+				new PatternNode("person", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
+				.addChild(new PatternNode("email", NodeType.ELEMENT, true, false,false,false, new StringPredicate("m@home")))
+				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
+								.addChild(new PatternNode("first",NodeType.ELEMENT, true, true,false,false, AnyPredicate.getInstance()))
+								.addChild(new PatternNode("last",NodeType.ELEMENT, true, true,false,false, AnyPredicate.getInstance()))));
+		*/
+
+
 		System.out.println("hello");
 		
 		XMLReader saxReader = 
-			    //XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
 			    XMLReaderFactory.createXMLReader();
 		TPEStack stack = generate(root, null);
 		saxReader.setContentHandler(new StackEval(stack));
 		saxReader.parse("sample/sampleXML.xml");
+		List<Map<PatternNode, String>> tuples = MatchPrinter.extractTuples(stack.top());
+		System.out.println(MatchPrinter.printFilteredTupleTable(tuples, root));
 
-		System.out.println("hi");
-		//cMatchPrinter(stack.top(), "");
-		List<Map<PatternNode, String>> o = MatchPrinter.generateRoutes(stack.top(), new HashMap<PatternNode, String>());
-		for(Map<PatternNode, String> route : MatchPrinter.generateTuples(o)){
-			//System.out.println(MatchPrinter.printRoute(route));
-			//System.out.println(MatchPrinter.printFilteredRoute(route));
-			System.out.println(MatchPrinter.printFilteredRouteComplete(route));
-		}
-		//MatchPrinter.printRoute(route);
-		System.out.println("done");
 	}
 	
 	public static TPEStack generate (PatternNode root, TPEStack parent){
@@ -55,10 +73,8 @@ public class EntryPoint {
 	
 	public static void cMatchPrinter(Match m, String acc) {
 		 Map<PatternNode, List<Match>> children = m.getChildren();
-		 //if(m.getStack().getNode().isRequired()) {
-			 //acc = acc + " "+ m.getStack().getNode().getName() + " " + m.getStart();
-		 	acc = acc + " " + m.getStart();
-		 //}
+	 	 acc = acc + " " + m.getStart();
+		
 		 if (children.isEmpty()) {
 			 System.out.println(acc);
 			 return;

@@ -82,6 +82,15 @@ public class PatternNode {
 		return children;
 	}
 	
+	public List<PatternNode> getOrderedSubTree(){
+		List<PatternNode> retval = new ArrayList<PatternNode>();
+		retval.add(this);
+		for(PatternNode child: this.getChildren()){
+			retval.addAll(child.getOrderedSubTree());
+		}
+		return retval;
+	}
+	
 	public PatternNode addChild(PatternNode child){
 		children.add(child);
 		return this;
