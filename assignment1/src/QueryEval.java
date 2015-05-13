@@ -28,7 +28,7 @@ public class QueryEval implements ContentHandler{
 			String scratchName = fullName == null? "": fullName;
 			if(scratchName.startsWith("@")){
 				isAttr = true;
-				scratchName.substring(1, scratchName.length());
+				scratchName = scratchName.substring(1, scratchName.length());				
 			}
 			
 			boolean wildcard = false;
