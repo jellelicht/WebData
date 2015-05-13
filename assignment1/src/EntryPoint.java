@@ -29,6 +29,8 @@ public class EntryPoint {
 				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
 								.addChild(new PatternNode("last",
 										NodeType.ELEMENT, true, true,false,true, new StringPredicate("Hart")))));
+		
+		
 
 		/*
 		 * This case should only return 
@@ -47,6 +49,12 @@ public class EntryPoint {
 
 
 		System.out.println("hello");
+		XMLReader qsaxReader = 
+			    XMLReaderFactory.createXMLReader();
+		QueryEval qe = new QueryEval();
+		qsaxReader.setContentHandler(qe);
+		qsaxReader.parse("sample/q5.xml");
+		root = qe.getRoot();
 		
 		XMLReader saxReader = 
 			    XMLReaderFactory.createXMLReader();
