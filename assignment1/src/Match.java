@@ -12,7 +12,7 @@ public class Match {
 	private MatchState state;
 
 	Match parent;
-	
+
 	Map <PatternNode, List<Match> > children;
 	
 	TPEStack stack;
@@ -64,6 +64,10 @@ public class Match {
 		return state;
 	}
 
+	public void setParent(Match parent) {
+		this.parent = parent;
+	}
+	
 	public Match getParent() {
 		return parent;
 	}

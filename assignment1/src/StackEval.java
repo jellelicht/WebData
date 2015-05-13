@@ -19,6 +19,7 @@ public class StackEval implements ContentHandler{
 
 	private TPEStack rootStack;
 	private int currentPre = 1; // pre number of the last element which has started
+	private int currentAttr = 0;
 	private Stack <Integer> preOfOpenNodes; // pre numbers for all elements having started but not ended yet
 	private String value;
 	
@@ -91,10 +92,16 @@ public class StackEval implements ContentHandler{
 		currentPre++; // incease counter for each single startElement invocation
 		for(int i=0; i<atts.getLength(); i++){
 			for (TPEStack s : rootStack.getDescendantStacks()){
-				if(ancestorCondition(s, "@" + atts.getLocalName(i))) {
+				if(ancestorCondition(s, atts.getLocalName(i)) && s.getNode().fullfillsPredicate(atts.getValue(i))) {
 					Match m = new Match(currentPre, s.getParentStack().top(), s);
+					//Match 
+					m.getParent().addChild(s.getNode(),m);
+					//m.setParent(s.getParentStack().top());
+					m.setValue(atts.getValue(i));
 					//System.out.println("PUSH match " + m.getStack().getNode().getName() +" with id: "+ m.getStart());
 					s.push(m); 
+					m.setState(MatchState.CLOSED);
+					currentAttr++;
 					break;
 				}
 				
@@ -123,7 +130,7 @@ public class StackEval implements ContentHandler{
 					if(!s.getNode().fullfillsPredicate(value)){
 						predMatch = false;
 					}
-					System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + m.getValue());
+					//System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + m.getValue());
 				}
 				m.setState(MatchState.CLOSED);
 				//System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + value);
@@ -131,7 +138,7 @@ public class StackEval implements ContentHandler{
 				// of its pattern node
 				for (PatternNode child : s.getNode().getChildren()){
 					if(m.getChildren().get(child) == null && child.isRequired()){
-						System.out.println("Required: " + child.getName() + " "+ child.isRequired());
+						//System.out.println("Required: " + child.getName() + " "+ child.isRequired());
 						// m lacks a child Match for the pattern node pChild
 						// we remove m from its Stack, detach it from its parent etc.
 						s.remove(m);
@@ -149,7 +156,7 @@ public class StackEval implements ContentHandler{
 						
 						m.getParent().removeChild(s.getNode(),m);
 					}
-					System.out.println("Gone");
+					//System.out.println("Gone");
 				}
 			}
 		}

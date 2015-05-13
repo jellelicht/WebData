@@ -28,6 +28,7 @@ public class MatchPrinter {
 		}
 		for(Entry<PatternNode, List<Match>> listChild : children.entrySet()){
 			for(Match child : listChild.getValue()) {
+				System.out.println("generated child: " + listChild.getKey().getName());
 				Map<PatternNode, String> placeholder = new HashMap<PatternNode, String>();
 				placeholder.putAll(cache);
 				routes.addAll(generateRoutes(child, placeholder));

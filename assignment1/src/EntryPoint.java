@@ -25,12 +25,11 @@ public class EntryPoint {
 		 */
 		PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance()).addChild( 
 				new PatternNode("person", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
-				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false,true, AnyPredicate.getInstance()))
+				.addChild(new PatternNode("email", NodeType.ELEMENT, true, true,false,true, AnyPredicate.getInstance())
+					.addChild(new PatternNode("tel", NodeType.ATTRIBUTE, true,true,false,true, new StringPredicate("1234"))))
 				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
-								.addChild(new PatternNode("last",
-										NodeType.ELEMENT, true, true,false,true, new StringPredicate("Hart")))));
-		
-		
+					.addChild(new PatternNode("last",NodeType.ELEMENT, true, true,false,true, AnyPredicate.getInstance()))));
+
 
 		/*
 		 * This case should only return 
@@ -62,7 +61,12 @@ public class EntryPoint {
 		saxReader.setContentHandler(new StackEval(stack));
 		saxReader.parse("sample/sampleXML.xml");
 		List<Map<PatternNode, String>> tuples = MatchPrinter.extractTuples(stack.top());
-		System.out.println(MatchPrinter.printFilteredTupleTable(tuples, root));
+		List<Map<PatternNode, String>> routes = MatchPrinter.generateRoutes( stack.top(), new HashMap<PatternNode, String>());
+		//System.out.println(MatchPrinter.printFilteredTupleTable(tuples, root));
+		for(Map<PatternNode, String> route : routes){
+			System.out.println(MatchPrinter.printRoute(route));
+		}
+		System.out.println(MatchPrinter.printTupleTable(tuples, root));
 
 	}
 	
