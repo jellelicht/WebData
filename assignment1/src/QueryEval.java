@@ -104,7 +104,6 @@ public class QueryEval implements ContentHandler{
 		if(parent == null){ // root node
 			root = curr;
 		} else {
-			System.out.println("Adding " + curr.getName() + " to " + parent.getName());
 			parent.addChild(curr);
 		}
 		created.push(curr);

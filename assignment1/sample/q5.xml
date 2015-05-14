@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node name="people">
 	<node name="person">
-		<node name="email" required="true" resolve="true" fullRepresentation="true"/>
-		<node name="name">
-			<node name="last" required="true" resolve="true" fullRepresentation="true" pred="Hart"/>
+		<node name="email" required="true" >
+			<node name="@tel" required="true" pred ="123"/>
+		</node>
+		<node name="*">
+			<node name="last" required="true" resolve="true" fullRepresentation="true"/>
 		</node>
 	</node>
 </node>
+

@@ -28,7 +28,6 @@ public class MatchPrinter {
 		}
 		for(Entry<PatternNode, List<Match>> listChild : children.entrySet()){
 			for(Match child : listChild.getValue()) {
-				System.out.println("generated child: " + listChild.getKey().getName());
 				Map<PatternNode, String> placeholder = new HashMap<PatternNode, String>();
 				placeholder.putAll(cache);
 				routes.addAll(generateRoutes(child, placeholder));
@@ -43,35 +42,6 @@ public class MatchPrinter {
 		return generateTuples(routes);
 	}
 	
-	public static String printRoute(Map<PatternNode, String> route){
-		String acc = "";
-		for(Entry<PatternNode, String> e : route.entrySet()){
-			acc += "\t" + e.getKey().getName() + " = " + e.getValue();
-		}
-		return acc;
-	}
-
-	
-	public static String printFilteredRoute(Map<PatternNode, String> route){
-		String acc = "";
-		for(Entry<PatternNode, String> e : route.entrySet()){
-			if(e.getKey().isResult()){
-				acc += "\t" + e.getKey().getName() + " = " + e.getValue();
-			}
-		}
-		return acc;
-	}
-
-	public static String printTupleTable(List<Map<PatternNode, String>> tuples, PatternNode root){
-		String heading = printTupleHeading(root);
-		String tuplesString = "";
-		for(Map<PatternNode, String> tuple: tuples){
-			if(isCompleteTuple(tuple, root)){
-				tuplesString += "\n" + printTuple(tuple, root);
-			}
-		}
-		return heading + tuplesString;
-	}
 	public static String printFilteredTupleTable(List<Map<PatternNode, String>> tuples, PatternNode root){
 		String heading = printFilteredTupleHeading(root);
 		String tuplesString = "";
@@ -82,14 +52,7 @@ public class MatchPrinter {
 		}
 		return heading + tuplesString;
 	}
-	private static String printTupleHeading(PatternNode root){
-		String acc = "";
-		for (PatternNode p : root.getOrderedSubTree()){
-			acc += "\t\t" + p.getName();
-		}
-		return acc;
-			
-	}
+	
 	private static String printFilteredTupleHeading(PatternNode root){
 		String acc = "";
 		for (PatternNode p : root.getOrderedSubTree()){
@@ -102,28 +65,10 @@ public class MatchPrinter {
 			
 	}
 	
-	private static String printTuple(Map<PatternNode, String> tuple, PatternNode root){
-		String acc = "";
-		for (PatternNode p : root.getOrderedSubTree()){
-			//acc += "\t" + p.getName();
-			String placeholder = tuple.get(p);
-			acc += "\t\t";
-			if(placeholder == null){
-				acc += "null";
-			} else if(p.isResult()) {
-				acc += "[" + placeholder +"]";
-			} else {
-				acc += placeholder;
-			}
-		}
-		return acc;
-	}
-	
 	private static boolean isCompleteTuple(Map<PatternNode, String> tuple, PatternNode root){
 		for (PatternNode p : root.getOrderedSubTree()){
 			String retval = tuple.get(p);
 			if(p.isRequired() && retval == null) {
-				System.out.println(p.getName() + " is required, but retval is null...");
 				return false;
 			}
 		}
@@ -153,19 +98,6 @@ public class MatchPrinter {
 		}
 		return acc;
 	}
-
-	
-	public static String printFilteredRouteComplete(Map<PatternNode, String> route){
-		String acc = "";
-		for(Entry<PatternNode, String> e : route.entrySet()){
-			if(e.getKey().isResult()){
-				acc += "\t<" + e.getKey().getName() + ">" + e.getValue() + "</" + e.getKey().getName() + "> ";			
-			}
-			
-		}
-		return acc;
-	}
-
 	
 	public static Map<PatternNode, String> mergeRoute(Map<PatternNode, String> route1, Map<PatternNode, String> route2){
 		Map<PatternNode, String> retval = new HashMap<PatternNode, String>();

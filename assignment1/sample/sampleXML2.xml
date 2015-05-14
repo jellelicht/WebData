@@ -1,6 +1,6 @@
 <people>
 	<person>
-		<email>m@home</email>
+		<email tel="123">m@home</email>
 		<name>
 			<first>Mary</first>
 			<last>Jones</last>
