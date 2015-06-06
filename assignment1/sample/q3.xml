@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node name="people">
+	<node name="person">
+		<node name="email" required="true" pred="m@home" />
+		<node name="name">
+			<node name="first" required="true" resolve="true" fullRepresentation="false" />
+			<node name="last" required="true" resolve="true" fullRepresentation="false"/>
+		</node>
+	</node>
+</node>
+

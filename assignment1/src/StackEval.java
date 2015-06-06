@@ -5,21 +5,11 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-/*
- * TreePattern q;
-TPEStack rootStack; // stack for the root of q
-// pre number of the last element which has started:
-int currentPre = 0 ;
-// pre numbers for all elements having started but not ended yet:
-Stack < Integer > preOfOpenNodes;
-
- */
 
 public class StackEval implements ContentHandler{
 
 	private TPEStack rootStack;
 	private int currentPre = 1; // pre number of the last element which has started
-	private int currentAttr = 0;
 	private Stack <Integer> preOfOpenNodes; // pre numbers for all elements having started but not ended yet
 	private String value;
 	
@@ -76,11 +66,8 @@ public class StackEval implements ContentHandler{
 				Match m = new Match(currentPre, parentMatch , s);
 				// create a match satisfying the ancestor conditions
 				// of query node s.p
-				//System.out.println("PUSH match " + m.getStack().getNode().getName() +" with id: "+ m.getStart());
 				s.push(m); 
 				if(parentMatch != null ){
-					//System.out.println("register");
-
 					parentMatch.addChild(s.getNode(),m);
 				}
 				break;
@@ -88,20 +75,16 @@ public class StackEval implements ContentHandler{
 		}
 		preOfOpenNodes.push(currentPre);
 
-		//System.out.println("Incing currentPre from " + currentPre + " to " + (currentPre+1) + " with name " + localName);
-		currentPre++; // incease counter for each single startElement invocation
+		currentPre++; // increase counter for each single startElement invocation
 		for(int i=0; i<atts.getLength(); i++){
 			for (TPEStack s : rootStack.getDescendantStacks()){
 				if(ancestorCondition(s, atts.getLocalName(i)) && s.getNode().fullfillsPredicate(atts.getValue(i))) {
 					Match m = new Match(currentPre, s.getParentStack().top(), s);
 					//Match 
 					m.getParent().addChild(s.getNode(),m);
-					//m.setParent(s.getParentStack().top());
 					m.setValue(atts.getValue(i));
-					//System.out.println("PUSH match " + m.getStack().getNode().getName() +" with id: "+ m.getStart());
 					s.push(m); 
 					m.setState(MatchState.CLOSED);
-					currentAttr++;
 					break;
 				}
 				
@@ -116,8 +99,6 @@ public class StackEval implements ContentHandler{
 		// we need to find out if the element ending now corresponded
 		// to matches in some stacks
 		// first, get the pre number of the element that ends now:
-		//if(preOfOpenNodes.isEmpty()) return;
-		//System.out.println("Popping node " + preOfOpenNodes.peek());
 		int preOfLastOpen = preOfOpenNodes.pop();
 		// now look for Match objects having this pre number:
 		for (TPEStack s : rootStack.getDescendantStacks()){
@@ -130,21 +111,16 @@ public class StackEval implements ContentHandler{
 					if(!s.getNode().fullfillsPredicate(value)){
 						predMatch = false;
 					}
-					//System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + m.getValue());
 				}
 				m.setState(MatchState.CLOSED);
-				//System.out.println("POP match " + m.getStack().getNode().getName() + " with id " + m.getStart() + " with value " + value);
 				// check if m has child matches for all children
 				// of its pattern node
 				for (PatternNode child : s.getNode().getChildren()){
 					if(m.getChildren().get(child) == null && child.isRequired()){
-						//System.out.println("Required: " + child.getName() + " "+ child.isRequired());
 						// m lacks a child Match for the pattern node pChild
 						// we remove m from its Stack, detach it from its parent etc.
 						s.remove(m);
-						//System.out.println("Something happened");
 						if(m.getParent() != null) {
-							//System.out.println("unregistra");
 							m.getParent().removeChild(s.getNode(),m);
 						}
 						break;
@@ -156,7 +132,6 @@ public class StackEval implements ContentHandler{
 						
 						m.getParent().removeChild(s.getNode(),m);
 					}
-					//System.out.println("Gone");
 				}
 			}
 		}

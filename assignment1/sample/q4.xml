@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node name="people">
 	<node name="person">
-		<node name="email" required="true" pred="m@home" />
-		<node name="name">
-			<node name="first" required="true" resolve="true" fullRepresentation="true" />
+		<node name="email" required="true" resolve="false" fullRepresentation="false" pred="m@home"/>
+		<node name="*">
 			<node name="last" required="true" resolve="true" fullRepresentation="true"/>
 		</node>
 	</node>
 </node>
 
-<!-- PatternNode root = new PatternNode("people", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance()).addChild( 
-				new PatternNode("person", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
-				.addChild(new PatternNode("email", NodeType.ELEMENT, true, false,false,false, new StringPredicate("m@home")))
-				.addChild(new PatternNode("name", NodeType.ELEMENT, false, false,false,false, AnyPredicate.getInstance())
-								.addChild(new PatternNode("first",NodeType.ELEMENT, true, true,false,false, AnyPredicate.getInstance()))
-								.addChild(new PatternNode("last",NodeType.ELEMENT, true, true,false,false, AnyPredicate.getInstance())))); -->

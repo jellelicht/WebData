@@ -11,7 +11,6 @@ public class StringPredicate implements Predicate {
 	@Override
 	public boolean isMatch(String s) {
 		// TODO Auto-generated method stub
-		System.out.println("Comparing internal " + pred + " vs external " + s);
 		return pred.equals(s);
 	}
 

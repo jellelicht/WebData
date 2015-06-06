@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node name="people">
+	<node name="person">
+		<node name="email" required="false" resolve="true" />
+		<node name="name">
+			<node name="last" required="true" resolve="true" />
+		</node>
+	</node>
+</node>
+
